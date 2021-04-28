@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>marklinejs</title>
+  <style type="text/css">
+    body{
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      height: 100%;
+      overflow: hidden;
+    }
+    canvas{
+      background-color: lightgray;
+    }
+
+    #mk-info{
+      font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+      position: absolute;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid #000;
+      padding: 4px 8px;
+      top: 200px;
+      left: 200px;
+      color: #fff;
+      max-width: 250px;
+      word-wrap: break-word;
+      font-size: 20px;
+    }
+    #mk-info div{
+      line-height: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div align="center">
+  <canvas id="canvas">
+    <img id="markLine-bg" src="img/BG.jpg"/>
+  </canvas>
+
+  <canvas id="canvas2">
+    <img id="markLine-bg2" src="img/BG.jpg"/>
+  </canvas>
+</div>
+
+</body>
+<script type="text/javascript" src="js/markline2.js"></script>
+<script type="text/javascript">
+
+  var coordinates = [{x:50,y:50,vLen:50},{x:100,y:50,vLen:70},{x:150,y:50,vLen:100},{x:200,y:50,vLen:130},{x:250,y:50,vLen:160},{x:300,y:50,vLen:190},
+      {x:350,y:50,vLen:150},{x:400,y:50,vLen:120},{x:450,y:50,vLen:90},{x:500,y:50,vLen:50}];
+
+  function parseData(data, style) {
+    var options = [];
+    for(var i = 0; i < data.length; i++) {
+        options[i] = {
+            from: {x: data[i].x, y: data[i].y},
+            to:   {x: data[i].hLen == undefined ? data[i].x : data[i].x + data[i].hLen,
+                   y: data[i].vLen == undefined ? data[i].y : data[i].y + data[i].vLen},
+            info: [data[i].info == undefined ?  ('pressure line ' + (i+1)) :  data[i].info],
+            style: style,
+        };
+    }
+
+    var len = options.length - 1;
+    for(var i = 0; i < len; i++) {
+        options.push({
+            from: {x: options[i].to.x, y: options[i].to.y},
+            to:   {x: options[i + 1].to.x, y: options[i + 1].to.y},
+            info: [('pressure boundary ' + (i+1))],
+            style: style,
+        });
+    }
+
+    return options;
+  }
+
+  var cvs = document.getElementById("canvas");
+  cvs.width = 800;
+  cvs.height= 500;
+
+  var options = parseData(coordinates, 'red');
+  var mkLine = new markLine("canvas","markLine-bg",1920/3,1200/3);
+  mkLine.setOption(options);
+  mkLine.paint();
+
+
+  var cvs2 = document.getElementById("canvas2");
+  cvs2.width = 800;
+  cvs2.height= 500;
+
+  var options2 = parseData(coordinates, 'red');
+  var mkLine2 = new markLine("canvas2","markLine-bg2",1920/3,1200/3);
+  mkLine2.setOption(options2);
+  mkLine2.paint();
+
+</script>
+
+</html>
