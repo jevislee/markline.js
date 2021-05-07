@@ -33,9 +33,7 @@
     }
   </style>
 </head>
-<body>
-
-<div align="center">
+<body style="overflow:scroll;">
   <canvas id="canvas">
     <img id="markLine-bg" src="img/BG.jpg"/>
   </canvas>
@@ -43,81 +41,75 @@
   <canvas id="canvas2">
     <img id="markLine-bg2" src="img/BG.jpg"/>
   </canvas>
-</div>
 
+  <canvas id="canvas3">
+    <img id="markLine-bg3" src="img/BG.jpg"/>
+  </canvas>
 </body>
 <script type="text/javascript" src="js/markline2.js"></script>
 <script type="text/javascript">
 
-  var coordinates1 = [{x:50,y:50,vLen:50},{x:100,y:50,vLen:70},{x:150,y:50,vLen:100},{x:200,y:50,vLen:130},{x:250,y:50,vLen:160},{x:300,y:50,vLen:190},
-      {x:350,y:50,vLen:150},{x:400,y:50,vLen:120},{x:450,y:50,vLen:90},{x:500,y:50,vLen:50}];
-
-  var coordinates2 = [{x:50,y:50,vLen:20},{x:100,y:50,vLen:30},{x:150,y:50,vLen:50},{x:200,y:50,vLen:60},{x:250,y:50,vLen:80},{x:300,y:50,vLen:100},
-      {x:350,y:50,vLen:110},{x:400,y:50,vLen:110},{x:450,y:50,vLen:110},{x:500,y:50,vLen:150}];
-
   function parseLines(data, style) {
     var options = [];
     for(var i = 0; i < data.length; i++) {
-        options[i] = {
-            from: {x: data[i].x, y: data[i].y},
-            to:   {x: data[i].hLen == undefined ? data[i].x : data[i].x + data[i].hLen,
-                   y: data[i].vLen == undefined ? data[i].y : data[i].y + data[i].vLen},
-            info: [data[i].line_info == undefined ?  ('pressure line ' + (i+1)) :  data[i].line_info],
-            style: style,
-        };
+      options[i] = {
+        from: {x: data[i].x, y: data[i].y},
+        to:   {x: data[i].hLen == undefined ? data[i].x : data[i].x + data[i].hLen,
+               y: data[i].vLen == undefined ? data[i].y : data[i].y + data[i].vLen},
+        info: [data[i].line_info == undefined ?  ('pressure line ' + (i+1)) :  data[i].line_info],
+        style: style,
+      };
     }
 
     var len = options.length - 1;
     for(var i = 0; i < len; i++) {
-        options.push({
-            from: {x: options[i].to.x, y: options[i].to.y},
-            to:   {x: options[i + 1].to.x, y: options[i + 1].to.y},
-            info: [('pressure boundary ' + (i+1))],
-            style: style,
-        });
+      options.push({
+        from: {x: options[i].to.x, y: options[i].to.y},
+        to:   {x: options[i + 1].to.x, y: options[i + 1].to.y},
+        info: [('pressure boundary ' + (i+1))],
+        style: style,
+      });
     }
 
     return options;
   }
 
   function parseDots(data, style) {
-      var options = [];
-      for(var i = 0; i < data.length; i++) {
-          options[i] = {
-              x: data[i].x, y: data[i].y,
-              info: [data[i].dot_info == undefined ?  ('dot ' + (i+1)) :  data[i].dot_info],
-              style: style
-          };
-      }
+    var options = [];
+    for(var i = 0; i < data.length; i++) {
+      options[i] = {
+        x: data[i].x, y: data[i].y,
+        info: [data[i].dot_info == undefined ?  ('dot ' + (i+1)) :  data[i].dot_info],
+        style: style
+      };
+    }
 
-      return options;
+    return options;
   }
 
-  var cvs = document.getElementById("canvas");
-  cvs.width = 800;
-  cvs.height= 500;
+  function paintMark(canvasId, canvasWidth, canvasHeight, bgId, bgWidth, bgHeight, markCoordinates, markColor) {
+    var cvs = document.getElementById(canvasId);
+    cvs.width = canvasWidth;
+    cvs.height = canvasHeight;
 
-  var options = parseLines(coordinates1, 'red');
-  var mkLine = new markLine("canvas","markLine-bg",1920/3,1200/3);
-  mkLine.setOption(options);
-  mkLine.paint();
+    var options = parseLines(markCoordinates, markColor);
+    var mkLine = new markLine(canvasId, bgId, bgWidth, bgHeight);
+    mkLine.setOption(options);
+    mkLine.paint();
 
-  var dots = parseDots(coordinates1, 'red');
-  mkLine.paintPoint(dots);
+    var dots = parseDots(markCoordinates, markColor);
+    mkLine.paintPoint(dots);
+  }
 
+  var coordinates1 = [{x:250,y:300,vLen:50},{x:300,y:300,vLen:70},{x:350,y:300,vLen:100},{x:400,y:300,vLen:130},{x:450,y:300,vLen:160},{x:500,y:300,vLen:190},
+      {x:550,y:300,vLen:150},{x:600,y:300,vLen:120},{x:650,y:300,vLen:90},{x:700,y:300,vLen:50}];
+  paintMark("canvas", 1360, 600, "markLine-bg", 3743/3.5, 2147/3.5, coordinates1, 'red');
 
-  var cvs2 = document.getElementById("canvas2");
-  cvs2.width = 800;
-  cvs2.height= 500;
+  var coordinates2 = [{x:200,y:300,vLen:50,hLen:50},{x:250,y:260,vLen:50,hLen:70},{x:300,y:220,vLen:50,hLen:90},{x:350,y:180,vLen:50,hLen:70},{x:400,y:140,vLen:50,hLen:50}];
+  paintMark("canvas2", 1360, 600, "markLine-bg2", 3743/3.5, 2147/3.5, coordinates2, 'green');
 
-  var options2 = parseLines(coordinates2, 'red');
-  var mkLine2 = new markLine("canvas2","markLine-bg2",1920/3,1200/3);
-  mkLine2.setOption(options2);
-  mkLine2.paint();
-
-  var dots2 = parseDots(coordinates2, 'red');
-  mkLine2.paintPoint(dots2);
-
+  var coordinates3 = [{x:10,y:150,hLen:500},{x:510,y:150,vLen:200,hLen:150},{x:660,y:350,hLen:500}];
+  paintMark("canvas3", 1360, 600, "markLine-bg3", 3743/3.5, 2147/3.5, coordinates3, 'blue');
 </script>
 
 </html>

@@ -644,6 +644,10 @@ function MarklineObj() {
   }
 
   function scaleCvs(scale,e, mkObj){
+    if(mkObj == undefined) {
+      return;
+    }
+
     scale > 1 ? mkObj.scaleFlag += 1 : mkObj.scaleFlag -=1;
     e = e || window.event;
     // 获取鼠标的位置
