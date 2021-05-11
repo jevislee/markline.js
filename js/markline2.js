@@ -633,21 +633,17 @@ function MarklineObj() {
       var delta = e.wheelDelta;
       if(delta > 0){
         if (mkObj.scaleFlag <= 9){
-          scaleCvs(1.25,mkObj);
+          scaleCvs(1.25,e,mkObj);
         }
       }else{
         if (mkObj.scaleFlag >= -9){
-          scaleCvs(0.8,mkObj);
+          scaleCvs(0.8,e,mkObj);
         }
       }
     },false);
   }
 
-  function scaleCvs(scale,e, mkObj){
-    if(mkObj == undefined) {
-      return;
-    }
-
+  function scaleCvs(scale,e,mkObj){
     scale > 1 ? mkObj.scaleFlag += 1 : mkObj.scaleFlag -=1;
     e = e || window.event;
     // 获取鼠标的位置
@@ -694,8 +690,8 @@ function MarklineObj() {
     // 背景位置、长宽
     mkObj.imgPosition.x = imgTransX;
     mkObj.imgPosition.y = imgTransY;
-    canWidth = scale * canWidth;
-    canHeight = scale * canHeight;
+    mkObj.canWidth = scale * mkObj.canWidth;
+    mkObj.canHeight = scale * mkObj.canHeight;
 
     cleanCvs(mkObj);
     paintBg(mkObj);
