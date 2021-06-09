@@ -454,7 +454,8 @@ function MarklineObj() {
     // 重置渲染上下文并清空画布
     mkObj.ctxGlobal.save();
     mkObj.ctxGlobal.setTransform(1, 0, 0, 1, 0, 0);
-    mkObj.ctxGlobal.clearRect(0, 0, canvas.width, canvas.height);
+    //修改拖拽时出现重影的bug,注:canvas的width和height必须和父div的一致,否则拖拽时也会出现重影
+    mkObj.ctxGlobal.clearRect(0, 0, mkObj.canWidth, mkObj.canHeight);
     // 恢复先前渲染上下文所进行的变换
     mkObj.ctxGlobal.restore();
   }
