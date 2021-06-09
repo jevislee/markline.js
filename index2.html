@@ -87,7 +87,7 @@
     return options;
   }
 
-  function paintMark(canvasId, canvasWidth, canvasHeight, bgId, bgWidth, bgHeight, markCoordinates, markColor) {
+  function paintMark(canvasId, canvasWidth, canvasHeight, bgId, bgWidth, bgHeight, markCoordinates, markColor, texts) {
     var cvs = document.getElementById(canvasId);
     cvs.width = canvasWidth;
     cvs.height = canvasHeight;
@@ -99,6 +99,10 @@
 
     var dots = parseDots(markCoordinates, markColor);
     mkLine.paintPoint(dots);
+
+    if(texts != undefined) {
+        mkLine.paintText(texts);
+    }
   }
 
   var coordinates1 = [{x:250,y:300,vLen:50},{x:300,y:300,vLen:70},{x:350,y:300,vLen:100},{x:400,y:300,vLen:130},{x:450,y:300,vLen:160},{x:500,y:300,vLen:190},
@@ -109,7 +113,8 @@
   paintMark("canvas2", 1360, 600, "markLine-bg2", 3743/3.5, 2147/3.5, coordinates2, 'green');
 
   var coordinates3 = [{x:10,y:150,hLen:500},{x:510,y:150,vLen:200,hLen:150},{x:660,y:350,hLen:500}];
-  paintMark("canvas3", 1360, 600, "markLine-bg3", 3743/3.5, 2147/3.5, coordinates3, 'blue');
+  var text3 = [{x: 300,y: 50,style: 'red',info: 'Hi,this is markline!'},{x: 300,y: 80,style: 'green',info: '中文测试!'}]
+  paintMark("canvas3", 1360, 600, "markLine-bg3", 3743/3.5, 2147/3.5, coordinates3, 'blue', text3);
 </script>
 
 </html>

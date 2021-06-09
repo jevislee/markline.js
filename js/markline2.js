@@ -2,9 +2,11 @@ function MarklineObj() {
     this.balls = [];
     this.lines = [];
     this.points = [];
+    this.texts = [];
     this.lineCount = 0;
     this.ballCount = 0;
     this.pointCount = 0;
+    this.textCount = 0;
 
     // 小球运动速度
     this.percent = 0;
@@ -34,6 +36,7 @@ function MarklineObj() {
     }
     // 描点的配置选项
     this.pointOption;
+    this.textOption;
 };
 
 (function(window,undefined){
@@ -149,23 +152,23 @@ function MarklineObj() {
       ctx.restore();
     },
     onHover: function(e){
-      info.innerHTML = "";
-      for(var i = 0; i < this.info.length; i++){
-        var new_div = document.createElement("div");
-        var node = document.createTextNode(this.info[i]);
-        new_div.appendChild(node);
-        info.appendChild(new_div);
-      }
-      var infoX = e.clientX;
-      var infoY = e.clientY;
-      if(e.clientX + 200 > window.innerWidth){
-        infoX = e.clientX - 150;
-      }else if(e.clientY + 200 > window.innerHeight){
-        infoY = e.clientY - 200;
-      }
-      info.style.top = infoY + "px";
-      info.style.left = infoX + 20 + "px";
-      info.style.display = "block";
+      // info.innerHTML = "";
+      // for(var i = 0; i < this.info.length; i++){
+      //   var new_div = document.createElement("div");
+      //   var node = document.createTextNode(this.info[i]);
+      //   new_div.appendChild(node);
+      //   info.appendChild(new_div);
+      // }
+      // var infoX = e.clientX;
+      // var infoY = e.clientY;
+      // if(e.clientX + 200 > window.innerWidth){
+      //   infoX = e.clientX - 150;
+      // }else if(e.clientY + 200 > window.innerHeight){
+      //   infoY = e.clientY - 200;
+      // }
+      // info.style.top = infoY + "px";
+      // info.style.left = infoX + 20 + "px";
+      // info.style.display = "block";
     },
     draw: function(width){
       var ctx = this.ctx;
@@ -297,21 +300,21 @@ function MarklineObj() {
       ctx.restore();
     },
     onHover: function(e){
-      info.innerHTML = "";
-      var new_div = document.createElement("div");
-      var node = document.createTextNode(this.info);
-      new_div.appendChild(node);
-      info.appendChild(new_div);
-      var infoX = e.clientX;
-      var infoY = e.clientY;
-      if(e.clientX + 200 > window.innerWidth){
-        infoX = e.clientX - 150;
-      }else if(e.clientY + 200 > window.innerHeight){
-        infoY = e.clientY - 200;
-      }
-      info.style.top = infoY + "px";
-      info.style.left = infoX + 20 + "px";
-      info.style.display = "block";
+      // info.innerHTML = "";
+      // var new_div = document.createElement("div");
+      // var node = document.createTextNode(this.info);
+      // new_div.appendChild(node);
+      // info.appendChild(new_div);
+      // var infoX = e.clientX;
+      // var infoY = e.clientY;
+      // if(e.clientX + 200 > window.innerWidth){
+      //   infoX = e.clientX - 150;
+      // }else if(e.clientY + 200 > window.innerHeight){
+      //   infoY = e.clientY - 200;
+      // }
+      // info.style.top = infoY + "px";
+      // info.style.left = infoX + 20 + "px";
+      // info.style.display = "block";
     },
     draw: function(r){
       var ctx = this.ctx;
@@ -329,6 +332,37 @@ function MarklineObj() {
     hoverPaint: function(){
       this.paint(5);
     },
+  }
+
+  var Text = function(option, mkObj){
+      this.x = option.x;
+      this.y = option.y;
+      this.info = option.info || "";
+      this.style = option.style || '#fff';
+      this.ctx = mkObj.ctxGlobal;
+      option.id == 0 ? this.id = 0 : this.id = option.id || mkObj.textCount;
+      mkObj.texts[mkObj.textCount] = this;
+      mkObj.textCount++;
+  }
+
+  Text.prototype = {
+      paint: function(r){
+          var ctx = this.ctx;
+          ctx.save();
+          ctx.beginPath();
+          ctx.fillStyle = this.style;
+          this.draw(r);
+          ctx.restore();
+      },
+      draw: function(r){
+          var ctx = this.ctx;
+          ctx.font="18px Arial"
+          ctx.fillText(this.info, this.x,this.y);
+      },
+      change: function(option){
+          this.x = option.x;
+          this.y = option.y;
+      },
   }
 
   var MarkLine = function(canvasId,bgId,w,h){
@@ -383,6 +417,18 @@ function MarklineObj() {
       }
       this.mkObj.pointOption = option.length;
     },
+    paintText: function(option){
+        this.mkObj.texts.length = 0;
+        this.mkObj.textCount = 0;
+        this.mkObj.textOption = 0;
+        if (option.length == 0) return;
+        else {
+            for(var i = 0; i < option.length; i++){
+                new Text(option[i], this.mkObj);
+            }
+        }
+        this.mkObj.textOption = option.length;
+    },
     onContextmenu: function(fn){
       this.canvas.addEventListener("contextmenu",fn,false);
     },
@@ -419,6 +465,12 @@ function MarklineObj() {
     getPoints: function(){
       return this.mkObj.points;
     },
+    getText: function(id){
+        return this.mkObj.texts[id];
+    },
+    getTexts: function(){
+        return this.mkObj.texts;
+    },
     getTransInfo: function(){
       return {
         x: this.mkObj.imgPosition.x,
@@ -447,6 +499,12 @@ function MarklineObj() {
     for(var i = 0; i < option; i++){
       mkObj.points[i].paint(2.5);
     }
+  }
+
+  function paintText(option,mkObj){
+      for(var i = 0; i < option; i++){
+          mkObj.texts[i].paint(2.5);
+      }
   }
 
   // 清除画布
@@ -490,6 +548,9 @@ function MarklineObj() {
     }else{
       paintPoint(mkObj.pointOption,mkObj);
     }
+
+    paintText(mkObj.textOption,mkObj);
+
       window.requestAnimationFrame(function() {
         animation(mkObj)
       });
@@ -556,6 +617,7 @@ function MarklineObj() {
 
       var tempLines = [];
       var tempPoints = [];
+      var tempTexts = [];
 
       for(var i = 0; i < mkObj.lines.length; i++){
         var tempPos1 = offset(mouse,mkObj.lines[i].x1,mkObj.lines[i].y1);
@@ -576,6 +638,15 @@ function MarklineObj() {
           y: tempXY.y
         }
         tempPoints.push(tempPos);
+      }
+
+      for(var i = 0; i < mkObj.texts.length; i++){
+          var tempXY = offset(mouse,mkObj.texts[i].x,mkObj.texts[i].y);
+          var tempPos = {
+              x: tempXY.x,
+              y: tempXY.y
+          }
+          tempTexts.push(tempPos);
       }
 
       // 改变鼠标指针样式
@@ -609,6 +680,13 @@ function MarklineObj() {
             }
             mkObj.points[i].change(tempOption);
           }
+          for(var i = 0; i < mkObj.texts.length; i++){
+            var tempOption = {
+                x : mouse.x - tempTexts[i].x,
+                y : mouse.y - tempTexts[i].y,
+            }
+            mkObj.texts[i].change(tempOption);
+          }
           cleanCvs(mkObj);
           paintBg(mkObj);
           for(var i = 0; i < mkObj.lines.length; i++){
@@ -616,7 +694,10 @@ function MarklineObj() {
           } 
           for(var i = 0; i < mkObj.points.length; i++){
             mkObj.points[i].paint(2.5);
-          } 
+          }
+          for(var i = 0; i < mkObj.texts.length; i++){
+            mkObj.texts[i].paint(2.5);
+          }
         }
 
       }, false)
@@ -686,6 +767,14 @@ function MarklineObj() {
         y : scale * (mkObj.points[i].y - mkObj.imgPosition.y) + imgTransY
       }
       mkObj.points[i].change(tempPos);
+    }
+
+    for(var i = 0; i < mkObj.texts.length; i++){
+      var tempPos = {
+          x : scale * (mkObj.texts[i].x - mkObj.imgPosition.x) + imgTransX,
+          y : scale * (mkObj.texts[i].y - mkObj.imgPosition.y) + imgTransY
+      }
+      mkObj.texts[i].change(tempPos);
     }
 
     // 背景位置、长宽
