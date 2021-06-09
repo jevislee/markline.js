@@ -34,6 +34,8 @@
   </style>
 </head>
 <body style="overflow:scroll;">
+  <button type="button" onclick="exportCanvasAsPNG('canvas3', '111.png')">Button</button>
+  <br/>
   <canvas id="canvas">
     <img id="markLine-bg" src="img/BG.jpg"/>
   </canvas>
@@ -48,6 +50,21 @@
 </body>
 <script type="text/javascript" src="js/markline2.js"></script>
 <script type="text/javascript">
+  function exportCanvasAsPNG(id, fileName) {
+    var canvasElement = document.getElementById(id);
+
+    var MIME_TYPE = "image/png";
+    var imgURL = canvasElement.toDataURL(MIME_TYPE);
+
+    var dlLink = document.createElement('a');
+    dlLink.download = fileName;
+    dlLink.href = imgURL;
+    dlLink.dataset.downloadurl = [MIME_TYPE, dlLink.download, dlLink.href].join(':');
+
+    document.body.appendChild(dlLink);
+    dlLink.click();
+    document.body.removeChild(dlLink);
+  }
 
   function parseLines(data, style) {
     var options = [];
@@ -56,17 +73,17 @@
         from: {x: data[i].x, y: data[i].y},
         to:   {x: data[i].hLen == undefined ? data[i].x : data[i].x + data[i].hLen,
                y: data[i].vLen == undefined ? data[i].y : data[i].y + data[i].vLen},
-        info: [data[i].line_info == undefined ?  ('pressure line ' + (i+1)) :  data[i].line_info],
+//        info: [data[i].line_info == undefined ?  ('pressure line ' + (i+1)) :  data[i].line_info],
         style: style,
       };
     }
-
+    //
     var len = options.length - 1;
     for(var i = 0; i < len; i++) {
       options.push({
         from: {x: options[i].to.x, y: options[i].to.y},
         to:   {x: options[i + 1].to.x, y: options[i + 1].to.y},
-        info: [('pressure boundary ' + (i+1))],
+//        info: [('pressure boundary ' + (i+1))],
         style: style,
       });
     }
@@ -79,7 +96,7 @@
     for(var i = 0; i < data.length; i++) {
       options[i] = {
         x: data[i].x, y: data[i].y,
-        info: [data[i].dot_info == undefined ?  ('dot ' + (i+1)) :  data[i].dot_info],
+//        info: [data[i].dot_info == undefined ?  ('dot ' + (i+1)) :  data[i].dot_info],
         style: style
       };
     }
@@ -87,13 +104,13 @@
     return options;
   }
 
-  function paintMark(canvasId, canvasWidth, canvasHeight, bgId, bgWidth, bgHeight, markCoordinates, markColor, texts) {
+  function paintMark(canvasId, canvasWidth, canvasHeight, bgId, markCoordinates, markColor, texts) {
     var cvs = document.getElementById(canvasId);
     cvs.width = canvasWidth;
     cvs.height = canvasHeight;
 
     var options = parseLines(markCoordinates, markColor);
-    var mkLine = new markLine(canvasId, bgId, bgWidth, bgHeight);
+    var mkLine = new markLine(canvasId, bgId, canvasWidth, canvasHeight);
     mkLine.setOption(options);
     mkLine.paint();
 
@@ -101,20 +118,20 @@
     mkLine.paintPoint(dots);
 
     if(texts != undefined) {
-        mkLine.paintText(texts);
+      mkLine.paintText(texts);
     }
   }
 
   var coordinates1 = [{x:250,y:300,vLen:50},{x:300,y:300,vLen:70},{x:350,y:300,vLen:100},{x:400,y:300,vLen:130},{x:450,y:300,vLen:160},{x:500,y:300,vLen:190},
       {x:550,y:300,vLen:150},{x:600,y:300,vLen:120},{x:650,y:300,vLen:90},{x:700,y:300,vLen:50}];
-  paintMark("canvas", 1360, 600, "markLine-bg", 3743/3.5, 2147/3.5, coordinates1, 'red');
+  paintMark("canvas", 1360, 600, "markLine-bg", coordinates1, 'red');
 
   var coordinates2 = [{x:200,y:300,vLen:50,hLen:50},{x:250,y:260,vLen:50,hLen:70},{x:300,y:220,vLen:50,hLen:90},{x:350,y:180,vLen:50,hLen:70},{x:400,y:140,vLen:50,hLen:50}];
-  paintMark("canvas2", 1360, 600, "markLine-bg2", 3743/3.5, 2147/3.5, coordinates2, 'green');
+  paintMark("canvas2", 1360, 600, "markLine-bg2", coordinates2, 'green');
 
   var coordinates3 = [{x:10,y:150,hLen:500},{x:510,y:150,vLen:200,hLen:150},{x:660,y:350,hLen:500}];
   var text3 = [{x: 300,y: 50,style: 'red',info: 'Hi,this is markline!'},{x: 300,y: 80,style: 'green',info: '中文测试!'}]
-  paintMark("canvas3", 1360, 600, "markLine-bg3", 3743/3.5, 2147/3.5, coordinates3, 'blue', text3);
+  paintMark("canvas3", 1360, 600, "markLine-bg3", coordinates3, 'blue', text3);
 </script>
 
 </html>
